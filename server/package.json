@@ -6,8 +6,12 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "init-db": "node scripts/initDatabase.js",
-    "test": "jest"
+    "setup-db": "node -e \"import('./database/schema.js').then(m => m.setupDatabase())\"",
+    "drop-db": "node -e \"import('./database/schema.js').then(m => m.dropAllTables())\"",
+    "test-db": "node -e \"import('./database/db.js').then(m => m.testConnection())\"",
+    "fetch": "node fetchService.js",
+    "cron-start": "node server.js",
+    "cron-test": "FETCH_SCHEDULE='* * * * *' node server.js"
   },
   "keywords": [
     "stock-market",
@@ -22,6 +26,7 @@
   "type": "module",
   "dependencies": {
     "axios": "^1.13.2",
+    "cheerio": "^1.1.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
