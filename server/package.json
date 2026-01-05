@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "init-db": "node scripts/initDatabase.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "stock-market",
+    "nse",
+    "bse",
+    "block-deals",
+    "bulk-deals",
+    "delivery-data"
+  ],
+  "author": "Vishal2002",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "node-cron": "^4.2.1",
+    "pg": "^8.16.3"
+  }
+}
