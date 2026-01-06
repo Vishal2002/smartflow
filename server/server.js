@@ -17,7 +17,7 @@ const ENABLE_CRON = process.env.ENABLE_CRON === 'true';
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true
 }));
 
