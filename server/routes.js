@@ -98,4 +98,11 @@ router.get('/health', controller.healthCheck);
  */
 router.get('/logs', controller.getFetchLogs);
 
+/**
+ * GET /api/signals/buy
+ * Get actionable buy signals with pagination
+ * Query params: minStrength, page, pageSize
+ */
+router.get('/signals/buy', controller.getBuySignals);
+
 export default router;

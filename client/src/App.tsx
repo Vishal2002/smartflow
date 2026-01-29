@@ -3,21 +3,31 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Dashboard } from '@/pages/Dashboard';
 import { DealsPage } from '@/pages/DealsPage';
+import { BuySignalsPage } from '@/pages/BuySignalsPage';
 import { useStats } from '@/hooks/useStats';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'deals'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'signals' | 'deals'>('signals'); // DEFAULT to signals!
   const { stats, refetch } = useStats();
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <Header onRefresh={refetch} />
 
       {/* Navigation Tabs */}
       <div className="border-b">
         <div className="container mx-auto px-4">
           <nav className="flex space-x-8">
+            <button
+              onClick={() => setActiveTab('signals')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'signals'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'
+              }`}
+            >
+              💰 Buy Signals
+            </button>
             <button
               onClick={() => setActiveTab('dashboard')}
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
@@ -44,11 +54,11 @@ function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {activeTab === 'signals' && <BuySignalsPage />}
         {activeTab === 'dashboard' && <Dashboard />}
         {activeTab === 'deals' && <DealsPage />}
       </main>
 
-      {/* Footer */}
       <Footer avgDelivery={stats?.avg_delivery_percent || 0} />
     </div>
   );

@@ -1,4 +1,5 @@
 import * as queries from './database/queries.js';
+import { generateBuySignals } from './database/signalQueries.js';
 
 /**
  * Get all deals with filters
@@ -75,7 +76,6 @@ export async function createDeal(req, res) {
   try {
     const dealData = req.body;
     
-    // Validate required fields
     const requiredFields = ['date', 'exchange', 'dealType', 'symbol', 'clientName', 'action', 'quantity', 'price'];
     const missingFields = requiredFields.filter(field => !dealData[field]);
     
@@ -87,12 +87,10 @@ export async function createDeal(req, res) {
       });
     }
     
-    // Calculate deal value
     dealData.value = dealData.quantity * dealData.price;
     
     const dealId = await queries.insertDeal(dealData);
     
-    // Update client pattern if it's a buy
     if (dealData.action === 'BUY') {
       await queries.updateClientPattern(dealData);
     }
@@ -117,13 +115,9 @@ export async function createDeal(req, res) {
 // ANALYTICS CONTROLLERS
 // ========================================
 
-/**
- * Get accumulation patterns
- */
 export async function getAccumulationPatterns(req, res) {
   try {
     const minDeals = parseInt(req.query.minDeals) || 3;
-    
     const patterns = await queries.getAccumulationPatterns(minDeals);
     
     res.json({
@@ -142,9 +136,6 @@ export async function getAccumulationPatterns(req, res) {
   }
 }
 
-/**
- * Get overall statistics
- */
 export async function getStatistics(req, res) {
   try {
     const stats = await queries.getStats();
@@ -168,13 +159,9 @@ export async function getStatistics(req, res) {
   }
 }
 
-/**
- * Get top clients by deal value
- */
 export async function getTopClients(req, res) {
   try {
     const limit = parseInt(req.query.limit) || 10;
-    
     const topClients = await queries.getTopClients(limit);
     
     res.json({
@@ -193,13 +180,9 @@ export async function getTopClients(req, res) {
   }
 }
 
-/**
- * Get most active symbols
- */
 export async function getActiveSymbols(req, res) {
   try {
     const limit = parseInt(req.query.limit) || 10;
-    
     const activeSymbols = await queries.getActiveSymbols(limit);
     
     res.json({
@@ -222,9 +205,6 @@ export async function getActiveSymbols(req, res) {
 // DELIVERY DATA CONTROLLERS
 // ========================================
 
-/**
- * Get delivery data for symbol
- */
 export async function getDeliveryData(req, res) {
   try {
     const { symbol } = req.params;
@@ -259,12 +239,8 @@ export async function getDeliveryData(req, res) {
 // SYSTEM CONTROLLERS
 // ========================================
 
-/**
- * Health check endpoint
- */
 export async function healthCheck(req, res) {
   try {
-    // Test database connection
     const result = await queries.getStats();
     
     res.json({
@@ -284,13 +260,9 @@ export async function healthCheck(req, res) {
   }
 }
 
-/**
- * Get fetch logs
- */
 export async function getFetchLogs(req, res) {
   try {
     const days = parseInt(req.query.days) || 7;
-    
     const logs = await queries.getFetchLogs(days);
     
     res.json({
@@ -305,6 +277,40 @@ export async function getFetchLogs(req, res) {
       success: false,
       error: 'Failed to fetch logs',
       message: error.message
+    });
+  }
+}
+
+// ========================================
+// BUY SIGNALS CONTROLLER
+// ========================================
+
+/**
+ * Get buy signals with pagination
+ */
+export async function getBuySignals(req, res) {
+  try {
+    const minStrength = parseInt(req.query.minSignalStrength) || 70;
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const offset = (page - 1) * pageSize;
+    
+    console.log(`📊 Fetching buy signals: strength=${minStrength}, page=${page}, pageSize=${pageSize}`);
+    
+    const signals = await generateBuySignals(minStrength, pageSize, offset);
+    
+    console.log(`✅ Found ${signals.data.length} signals`);
+    
+    res.json({
+      success: true,
+      ...signals,
+    });
+  } catch (error) {
+    console.error('❌ Controller error - getBuySignals:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch buy signals',
+      message: error.message,
     });
   }
 }
