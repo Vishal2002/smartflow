@@ -1,12 +1,10 @@
 import * as queries from './database/queries.js';
 import { generateBuySignals } from './database/signalQueries.js';
 
-/**
- * Get all deals with filters
- */
 export async function getAllDeals(req, res) {
   try {
     const filters = {
+      action: req.query.action || 'ALL',  // ADD THIS LINE
       exchange: req.query.exchange || 'ALL',
       dealType: req.query.dealType || 'ALL',
       minDelivery: parseInt(req.query.minDelivery) || 0,
@@ -15,6 +13,8 @@ export async function getAllDeals(req, res) {
       search: req.query.search,
       limit: parseInt(req.query.limit) || 100
     };
+    
+    console.log('📊 Fetching deals with filters:', filters); // Debug log
     
     const deals = await queries.getDeals(filters);
     

@@ -51,6 +51,13 @@ export async function getDeals(filters = {}) {
   const params = [];
   let paramIndex = 1;
   
+  // Filter by action (BUY/SELL) - ADD THIS
+  if (filters.action && filters.action !== 'ALL') {
+    query += ` AND action = $${paramIndex}`;
+    params.push(filters.action);
+    paramIndex++;
+  }
+  
   // Filter by exchange
   if (filters.exchange && filters.exchange !== 'ALL') {
     query += ` AND exchange = $${paramIndex}`;
